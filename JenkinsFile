@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout Code') {  
             steps {
-                git 'https://github.com/MegaChandel/Capstone_Project_DevOps_Megha_Chandel.git'
+                git branch: 'main', url: 'https://github.com/MegaChandel/Capstone_Project_DevOps_Megha_Chandel.git'
             }
         }
 
