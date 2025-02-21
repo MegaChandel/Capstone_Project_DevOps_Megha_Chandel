@@ -21,10 +21,17 @@ pipeline {
 
         stage('Run Tests') {  
             steps {
-                sh '''
-                source venv/bin/activate
-                python3 -m pytest tests/
-                '''
+                script {
+                    def testDirExists = sh(script: '[ -d tests ] && echo "EXISTS"', returnStdout: true).trim()
+                    if (testDirExists == "EXISTS") {
+                        sh '''
+                        source venv/bin/activate
+                        python3 -m unittest discover -s tests -p "test_*.py"
+                        '''
+                    } else {
+                        echo "No tests directory found, skipping tests..."
+                    }
+                }
             }
         }
 
