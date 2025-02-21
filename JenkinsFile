@@ -1,0 +1,44 @@
+pipeline {
+    agent any  
+
+    stages {
+        stage('Checkout Code') {  
+            steps {
+                git 'https://github.com/MegaChandel/Capstone_Project_DevOps_Megha_Chandel.git'
+            }
+        }
+
+        stage('Setup Virtual Environment') {
+            steps {
+                sh '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+                pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Tests') {  
+            steps {
+                sh 'pytest tests/'  
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t flask-app:latest .'
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {  
+            steps {
+                script {
+                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                    sh 'docker tag flask-app:latest meghachandel/flask-app:latest'
+                    sh 'docker push meghachandel/flask-app:latest'
+                }
+            }
+        }
+    }
+}
