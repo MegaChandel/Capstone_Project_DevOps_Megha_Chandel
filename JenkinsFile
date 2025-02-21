@@ -21,22 +21,31 @@ pipeline {
 
         stage('Run Tests') {  
             steps {
-                sh 'pytest tests/'  
+                sh '''
+                source venv/bin/activate
+                python3 -m pytest tests/
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t flask-app:latest .'
+                sh '''
+                source venv/bin/activate
+                docker build -t flask-app:latest .
+                '''
             }
         }
 
         stage('Push Docker Image to Docker Hub') {  
             steps {
                 script {
-                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-                    sh 'docker tag flask-app:latest meghachandel/flask-app:latest'
-                    sh 'docker push meghachandel/flask-app:latest'
+                    sh '''
+                    source venv/bin/activate
+                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker tag flask-app:latest meghachandel/flask-app:latest
+                    docker push meghachandel/flask-app:latest
+                    '''
                 }
             }
         }
